@@ -1,0 +1,14 @@
+# Binários
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+
+# Logs e Env
+.env
+*.log
+
+# Vendor
+vendor/
