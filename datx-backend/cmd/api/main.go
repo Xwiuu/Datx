@@ -9,6 +9,7 @@ import (
 	"github.com/xwiuu/datx-backend/internal/database"
 	"github.com/xwiuu/datx-backend/internal/handlers"
 	"github.com/xwiuu/datx-backend/internal/models"
+	"github.com/xwiuu/datx-backend/internal/services"
 )
 
 func main() {
@@ -52,6 +53,35 @@ func main() {
 	api.Post("/webhooks/:gateway", handlers.GatewayReceiver)
 	api.Get("/analytics", handlers.GetLinkAnalytics)
 	api.Get("/shield/event/:slug", handlers.RecordEvent)
+
+	// Rota do Dashboard
+	api.Get("/dashboard/summary", handlers.GetDashboardPro)
+
+	api.Get("/auth/facebook", handlers.ConnectFacebook)
+	api.Get("/auth/facebook/callback", handlers.FacebookCallback)
+	api.Patch("/links/:id/capi", handlers.UpdateLinkCAPI)
+
+	api.Get("/debug/test-capi", func(c *fiber.Ctx) error {
+		// Dados fakes para o teste
+		clickMap := map[string]interface{}{
+			"ip":          "127.0.0.1",
+			"ua":          "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+			"fbp":         "fb.1.123456789",
+			"fbc":         "fb.1.987654321",
+			"external_id": "ID-DE-TESTE-UUID",
+			"page_url":    "https://datx-teste.com",
+		}
+
+		// DISPARA PRO SEU WEBHOOK.SITE
+		// O PixelID e Token podem ser qualquer coisa aqui já que a URL no service está para o webhook.site
+		services.PushToFacebook("12345", "token_abc", "Purchase", clickMap, 197.00, "teste@gmail.com")
+
+		return c.SendString("🚀 Comando enviado! Olha lá no Webhook.site")
+	})
+
+	// Rotas de Integração (Painel do Usuário)
+	api.Put("/users/:user_id/integrations/facebook", handlers.UpdateFacebookIntegration)
+	api.Post("/integrations/facebook/test", handlers.TestFacebookConnection)
 
 	log.Fatal(app.Listen(":8080"))
 }

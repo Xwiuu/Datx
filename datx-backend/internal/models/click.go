@@ -30,9 +30,12 @@ type ClickLog struct {
 	ExternalID string `gorm:"index" json:"external_id"` // ID único que enviaremos pro Face depois
 
 	// --- O MATCHING (Conversão) ---
-	Converted       bool    `gorm:"default:false;index" json:"converted"` // Virou false no clique. Vai virar true no Webhook!
-	ConversionValue float64 `gorm:"default:0.0" json:"conversion_value"`  // Valor da venda (ex: 197.00)
-	TransactionID   string  `json:"transaction_id"`                       // ID da transação da Hotmart/Kiwify
+	Converted       bool    `gorm:"default:false;index" json:"converted"`       // Virou false no clique. Vai virar true no Webhook!
+	ConversionValue float64 `gorm:"default:0.0" json:"conversion_value"`        // Valor da venda (ex: 197.00)
+	TransactionID   string  `json:"transaction_id"`                             // ID da transação da Hotmart/Kiwify
+	PaymentStatus   string  `gorm:"default:'none';index" json:"payment_status"` // none, paid, pending, refunded, canceled
+	Gateway         string  `json:"gateway"`
+	ReachedCheckout bool    `gorm:"default:false;index" json:"reached_checkout"` // kiwify, eduzz, hotmart...
 
 	CreatedAt time.Time `gorm:"index" json:"created_at"`
 }

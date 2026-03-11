@@ -37,6 +37,9 @@ type Link struct {
 	MobileVisits int `gorm:"default:0" json:"mobile_visits"`
 	PCVisits     int `gorm:"default:0" json:"pc_visits"`
 
+	FbPixelID     string `json:"fb_pixel_id"`
+	FbAccessToken string `json:"fb_access_token"`
+
 	Status    string    `gorm:"default:'active'" json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 }

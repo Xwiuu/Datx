@@ -1,8 +1,9 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/xwiuu/datx-backend/internal/database"
 	"github.com/xwiuu/datx-backend/internal/models"
 )
@@ -11,33 +12,27 @@ import (
 func CreateLink(c *fiber.Ctx) error {
 	var link models.Link
 
+	// 1. Lê o JSON que vem do Postman ou Front-end
 	if err := c.BodyParser(&link); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Dados inválidos enviados no payload"})
+		return c.Status(400).JSON(fiber.Map{"error": "JSON inválido. Verifique os dados enviados."})
 	}
 
-	// HACK DE DESENVOLVIMENTO: Tenta achar um usuário. Se não achar, cria um "Fantasma"
+	// 2. 🛡️ O PULO DO GATO (Resolve o erro do UserID nulo)
+	// Pega o primeiro usuário cadastrado no banco de dados e atribui a ele
 	var user models.User
 	if err := database.DB.First(&user).Error; err != nil {
-		user = models.User{
-			ID:    uuid.New(),
-			Name:  "Commander",
-			Email: "commander@datx.ai",
-		}
-		// Cria o usuário fantasma no banco
-		database.DB.Create(&user)
+		fmt.Println("❌ Nenhum usuário no banco para ser o dono do link.")
+		return c.Status(500).JSON(fiber.Map{"error": "Crie pelo menos um usuário no banco primeiro!"})
 	}
+	link.UserID = user.ID // Define de quem é esse link
 
-	// Agora temos certeza que existe um usuário! Acopla o Shield a ele.
-	link.ID = uuid.New()
-	link.UserID = user.ID
-	link.Status = "active" // Garante que nasce ativo pronto pra guerra
-
+	// 3. Salva o Link (Shield) no banco
 	if err := database.DB.Create(&link).Error; err != nil {
-		// Se der erro de "duplicate key" no slug, o GORM vai avisar aqui
+		fmt.Println("❌ Erro DB ao salvar Link:", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Erro ao salvar shield no arsenal"})
 	}
 
-	// Responde com sucesso e devolve os dados criados (incluindo o Slug)
+	fmt.Println("✅ Link criado com sucesso! ID:", link.ID)
 	return c.Status(201).JSON(link)
 }
 
@@ -67,4 +62,19 @@ func GetLinkAnalytics(c *fiber.Ctx) error {
 	// Pega os dados das últimas 24h ou do dia atual
 	database.DB.Order("hour asc").Find(&stats)
 	return c.JSON(stats)
+}
+func UpdateLinkCAPI(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var input struct {
+		PixelID     string `json:"fb_pixel_id"`
+		AccessToken string `json:"fb_access_token"`
+		PageURL     string `json:"page_url"`
+	}
+
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "JSON inválido"})
+	}
+
+	database.DB.Model(&models.Link{}).Where("id = ?", id).Updates(input)
+	return c.JSON(fiber.Map{"status": "Configuração de CAPI salva!"})
 }
