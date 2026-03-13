@@ -31,11 +31,12 @@ type Link struct {
 	CheckoutURL string `json:"checkout_url"`
 
 	// --- ANALYTICS (BIG NUMBERS) ---
-	TotalVisits  int `gorm:"default:0" json:"total_visits"`
-	HumanVisits  int `gorm:"default:0" json:"human_visits"`
-	BotBlocked   int `gorm:"default:0" json:"bot_blocked"`
-	MobileVisits int `gorm:"default:0" json:"mobile_visits"`
-	PCVisits     int `gorm:"default:0" json:"pc_visits"`
+	TotalVisits  int       `gorm:"default:0" json:"total_visits"`
+	HumanVisits  int       `gorm:"default:0" json:"human_visits"`
+	BotBlocked   int       `gorm:"default:0" json:"bot_blocked"`
+	MobileVisits int       `gorm:"default:0" json:"mobile_visits"`
+	PCVisits     int       `gorm:"default:0" json:"pc_visits"`
+	ProductID    uuid.UUID `gorm:"type:uuid;index" json:"product_id"`
 
 	FbPixelID     string `json:"fb_pixel_id"`
 	FbAccessToken string `json:"fb_access_token"`

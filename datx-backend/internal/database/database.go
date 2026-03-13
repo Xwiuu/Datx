@@ -32,6 +32,7 @@ func ConnectDB() {
 	// 3. AGORA SIM MIGRAR: Como DB já tem valor, não vai dar panic
 	err = DB.AutoMigrate(
 		&models.User{},
+		&models.Product{},
 		&models.Link{},
 		&models.ClickLog{},
 		&models.LinkStats{},

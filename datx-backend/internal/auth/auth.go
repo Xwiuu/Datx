@@ -11,6 +11,7 @@ var jwtSecret = []byte("SUA_CHAVE_SUPER_SECRETA_DATX_2026") // Isso deve ir para
 
 // HashPassword transforma a senha em uma hash segura
 func HashPassword(password string) (string, error) {
+	// Custo 10: Rápido, seguro e não trava o servidor!
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	return string(bytes), err
 }

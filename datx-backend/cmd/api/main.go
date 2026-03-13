@@ -81,6 +81,10 @@ func main() {
 	protected.Put("/users/:user_id/integrations/facebook", handlers.UpdateFacebookIntegration)
 	protected.Post("/integrations/facebook/test", handlers.TestFacebookConnection)
 
+	protected.Get("/users/me", handlers.GetProfile)
+	protected.Put("/users/me", handlers.UpdateProfile)
+	protected.Put("/users/me/facebook", handlers.UpdateMyFacebook)
+
 	api.Get("/debug/test-capi", func(c *fiber.Ctx) error {
 		clickMap := map[string]interface{}{
 			"ip":          "127.0.0.1",
