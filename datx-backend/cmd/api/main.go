@@ -54,7 +54,7 @@ func main() {
 	api.Get("/shield/:slug", handlers.ServeShieldScript)
 	api.Post("/shield/trace/:slug", handlers.RegisterTrace)
 	api.Post("/trace-hardware", handlers.TraceHardware)
-	api.Post("/track", handlers.RegisterClick)
+	api.Post("/track/hit", handlers.RegisterClick)
 	api.Post("/webhooks/:gateway", handlers.GatewayReceiver)
 	api.Get("/shield/event/:slug", handlers.RecordEvent)
 
